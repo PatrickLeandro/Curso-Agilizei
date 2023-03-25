@@ -93,8 +93,15 @@ context('Dev Finances Agilizei', () => {
         
     });
 
+    it('Testes OK', () => {
+        //verifica se tirou todos os itens
+        cy.get('#data-table tbody tr').should('have.length', 0 );
+
+        
+    });
+
     
-    // alert
+   /*  // alert
     Cypress.on('test:after:run', (test, runnable) => {
         if (test.state === 'failed') {
         // exibe um alert somente se algum teste falhar
@@ -106,6 +113,6 @@ context('Dev Finances Agilizei', () => {
         // exibe um alert ao final de todos os testes
         alert('Testes concluídos')
     })
-  
+   */
 
 });
