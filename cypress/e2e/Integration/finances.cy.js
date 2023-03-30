@@ -1,5 +1,7 @@
 /// <reference types="cypress" />
 
+import { format,  prepareLocalStorage} from "../Integration/utils";
+
 context('Dev Finances Agilizei', () => {
 
     /* 
@@ -14,7 +16,13 @@ context('Dev Finances Agilizei', () => {
     */
 
     beforeEach(() =>{
-        cy.visit('https://devfinance-agilizei.netlify.app/');
+        cy.visit('https://devfinance-agilizei.netlify.app/', {
+            onBeforeLoad: (win) => {
+                prepareLocalStorage(win)
+            }
+        });
+
+
         cy.get('#data-table tbody tr').should('have.length', 0);
     });
 
@@ -115,34 +123,68 @@ context('Dev Finances Agilizei', () => {
     })
    */
 
-    it.only('Validação do saldo', () => {
+    it('Validação do saldo', () => {
 
+        // Clica no botão para adicionar uma nova transação
         cy.get('#transaction .button').click();
+    
+        // Preenche os campos da transação de entrada
         cy.get('#description').type('Mesada');
         cy.get('#amount').type(250);
         cy.get('#date').type('2023-02-17');
         cy.get('button').contains('Salvar').click();
-
+    
+        // Clica no botão para adicionar uma nova transação
         cy.get('#transaction .button').click();
+    
+        // Preenche os campos da transação de saída
         cy.get('#description').type('Mesada');
         cy.get('#amount').type(-50);
         cy.get('#date').type('2023-02-17');
         cy.get('button').contains('Salvar').click();
-
-       /*  cy.wait(2000); // espera 2 segundos */
-        
+    
+        /*  cy.wait(2000); // espera 2 segundos */
+    
+        // Variáveis para armazenar os valores de entradas e saídas
+        let incomes = 0;
+        let expenses = 0;
+    
+        // Loop através de todas as linhas da tabela de transações
         cy.get('table#data-table tbody tr').each(($el, index, $list) => {
-        cy.get($el).find('td.income, td.expense').invoke('text').then(text => {
-            cy.log(text)
-        }); 
-      }) 
-
+    
+            // Extrai o valor da transação e verifica se é uma entrada ou saída
+            cy.get($el).find('td.income, td.expense').invoke('text').then(text => {
+    
+                if (text.includes('-')) {
+                    // Se for uma saída, adiciona o valor à variável 'expenses'
+                    expenses = expenses + format(text)
+                } else {
+                    // Se for uma entrada, adiciona o valor à variável 'incomes'
+                    incomes = incomes + format(text)
+                }
+    
+                // Exibe no console os valores de entradas e saídas
+                cy.log(`entradas`,incomes)
+                cy.log(`saidas`,expenses)
+            }); 
+        })
+    
+        // Verifica se o valor total exibido na página está correto
+        cy.get('#totalDisplay').invoke('text').then(text =>{
+    
+            let formattedTotalDisplay = format(text);
+            let expectedTotal = incomes + expenses;
+    
+            // Compara o valor total exibido na página com o valor calculado
+            expect(formattedTotalDisplay).to.eq(expectedTotal);
+        });
+    });
+    
 
       
 
 
           
           
-    });
-
+    
 });
