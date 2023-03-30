@@ -115,4 +115,34 @@ context('Dev Finances Agilizei', () => {
     })
    */
 
+    it.only('Validação do saldo', () => {
+
+        cy.get('#transaction .button').click();
+        cy.get('#description').type('Mesada');
+        cy.get('#amount').type(250);
+        cy.get('#date').type('2023-02-17');
+        cy.get('button').contains('Salvar').click();
+
+        cy.get('#transaction .button').click();
+        cy.get('#description').type('Mesada');
+        cy.get('#amount').type(-50);
+        cy.get('#date').type('2023-02-17');
+        cy.get('button').contains('Salvar').click();
+
+       /*  cy.wait(2000); // espera 2 segundos */
+        
+        cy.get('table#data-table tbody tr').each(($el, index, $list) => {
+        cy.get($el).find('td.income, td.expense').invoke('text').then(text => {
+            cy.log(text)
+        }); 
+      }) 
+
+
+      
+
+
+          
+          
+    });
+
 });
