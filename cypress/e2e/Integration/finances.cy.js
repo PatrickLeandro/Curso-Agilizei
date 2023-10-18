@@ -138,7 +138,7 @@ context('Dev Finances Agilizei', () => {
         cy.get('#transaction .button').click();
     
         // Preenche os campos da transação de saída
-        cy.get('#description').type('Mesada');
+        cy.get('#description').type('Pizza');
         cy.get('#amount').type(-50);
         cy.get('#date').type('2023-02-17');
         cy.get('button').contains('Salvar').click();
